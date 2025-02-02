@@ -43,7 +43,7 @@ jobs:
     - name: Archive compiled driver
       run: |
         mkdir artifacts
-        find ./RTL88x2BU-Linux-Driver -name "*.ko" -exec cp {} artifacts \;
+        exec cp -R ./RTL88x2BU-Linux-Driver/* artifacts
         tar czvf driver-artifacts.tar.gz -C artifacts .
 
     - name: Upload artifacts
