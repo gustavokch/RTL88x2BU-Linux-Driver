@@ -21,7 +21,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential bc flex bison libssl-dev libelf-dev \
-          gcc-aarch64-linux-gnu g++-aarch64-linux-gnu \
+          gcc-12-aarch64-linux-gnu g++-12-aarch64-linux-gnu \
           libc6-dev-arm64-cross 
 
     - name: Download kernel source
