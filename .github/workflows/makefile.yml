@@ -1,22 +1,51 @@
-name: Makefile CI
+name: Compile RTL88x2BU Driver for arm64 kernel 6.1.77
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ "master" ]
+    branches: [main]
   pull_request:
-    branches: [ "master" ]
+    branches: [main]
 
 jobs:
-  build:
+  build-driver:
     runs-on: ubuntu-22.04-arm64
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout driver repository
+      uses: actions/checkout@v4
+      with:
+        repository: RinCat/RTL88x2BU-Linux-Driver
+        path: RTL88x2BU-Linux-Driver
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential git linux-headers-azure
+    - name: Install build dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential bc flex bison libssl-dev libelf-dev
 
-      - name: Compile the driver
-        run: make -j$(nproc)
+    - name: Download kernel source
+      run: |
+        wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.77.tar.xz
+        tar -xf linux-6.1.77.tar.xz
+
+    - name: Prepare kernel headers
+      working-directory: ./linux-6.1.77
+      run: |
+        make ARCH=arm64 defconfig
+        make ARCH=arm64 modules_prepare
+
+    - name: Compile the driver
+      working-directory: ./RTL88x2BU-Linux-Driver
+      run: |
+        make ARCH=arm64 KERNEL_SRC=../linux-6.1.77
+
+    - name: Archive compiled driver
+      run: |
+        mkdir artifacts
+        find ./RTL88x2BU-Linux-Driver -name "*.ko" -exec cp {} artifacts \;
+        tar czvf driver-artifacts.tar.gz -C artifacts .
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: rtl88x2bu-driver-arm64-6.1.77
+        path: driver-artifacts.tar.gz
