@@ -32,13 +32,13 @@ jobs:
     - name: Prepare kernel headers
       working-directory: ./linux-6.1.77
       run: |
-        make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- defconfig
-        make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- modules_prepare
+        make -j$(nproc) ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- defconfig
+        make -j$(nproc) ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- modules_prepare
 
     - name: Compile the driver
       working-directory: ./RTL88x2BU-Linux-Driver
       run: |
-        make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- KERNEL_SRC=../linux-6.1.77
+        make -j$(nproc) ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- KERNEL_SRC=../linux-6.1.77
 
     - name: Archive compiled driver
       run: |
