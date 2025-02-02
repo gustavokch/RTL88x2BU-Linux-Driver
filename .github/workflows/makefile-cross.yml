@@ -1,4 +1,4 @@
-name: Compile RTL88x2BU Driver for arm64 kernel 6.1.77
+name: Cross-compile RTL88x2BU Driver for arm64 kernel 6.1.77
 
 on:
   workflow_dispatch:
